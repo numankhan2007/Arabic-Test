@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arabic Proficiency Test Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#000;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.08);--border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.2);--primary:#38bdf8;--primary-light:rgba(56,189,248,0.15);--primary-dark:#0284c7;--accent:#c084fc;--green:#34d399;--green-light:rgba(52,211,153,0.15);--red:#f87171;--red-light:rgba(248,113,113,0.15);--orange:#fbbf24;--orange-light:rgba(251,191,36,0.15);--text:#f8fafc;--text2:#cbd5e1;--text3:#94a3b8;--radius:24px;--shadow:0 8px 32px rgba(0,0,0,0.5);--shadow-lg:0 12px 48px rgba(0,0,0,0.7)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;position:relative}
+.gif-bg{position:fixed;inset:0;z-index:0;background:url('bg.gif') center/cover no-repeat;pointer-events:none}
+.gif-overlay{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,rgba(0,0,0,0.7),rgba(15,23,42,0.5));pointer-events:none}
+.topbar,.container{position:relative;z-index:1}
+.topbar{background:rgba(15,23,42,0.6);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.topbar .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1em;color:var(--primary)}
+.topbar .logo .icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1em}
+.topbar .timer-display{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:.85em;font-weight:600;color:var(--primary);background:var(--primary-light);padding:5px 14px;border-radius:8px}
+.topbar .timer-display .timer-icon{font-size:1em}
+.btn-exit{background:transparent;color:var(--text3);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-family:inherit;font-size:.8em;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-exit:hover{border-color:var(--red);color:var(--red);background:var(--red-light)}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.confirm-box{background:var(--surface);backdrop-filter:blur(30px);border:1px solid var(--border);border-top:1px solid rgba(255,255,255,0.2);border-radius:24px;padding:32px;max-width:380px;width:90%;text-align:center;box-shadow:var(--shadow-lg),inset 0 0 20px rgba(255,255,255,0.02)}
+.confirm-box h3{font-size:1.2em;margin-bottom:8px}
+.confirm-box p{color:var(--text2);font-size:.9em;margin-bottom:20px}
+.confirm-box .cb-btns{display:flex;gap:10px;justify-content:center}
+.confirm-box .cb-btns .btn{padding:10px 24px;font-size:.9em}
+.container{max-width:760px;margin:0 auto;padding:24px 20px}
+/* Welcome */
+#welcomeScreen{animation:fadeIn .5s ease}
+.hero{text-align:center;padding:56px 20px 40px;background:var(--surface);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--border);border-top:1px solid rgba(255,255,255,0.2);border-left:1px solid rgba(255,255,255,0.1);border-radius:32px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:var(--shadow-lg),inset 0 0 30px rgba(255,255,255,0.03)}
+.hero::before{content:'✦';position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:1.4em;color:var(--primary);opacity:.5;animation:spinStar 6s linear infinite}
+@keyframes spinStar{to{transform:translateX(-50%) rotate(360deg)}}
+.hero h1{font-size:2.2em;font-weight:900;color:var(--text);margin-bottom:12px;background:linear-gradient(135deg,#fff,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 16px rgba(56,189,248,0.4))}
+.hero .hero-arabic{font-size:1.3em;color:var(--primary);opacity:.3;margin-bottom:10px;font-family:'JetBrains Mono',monospace;letter-spacing:4px}
+.hero p{color:var(--text2);font-size:1em;max-width:520px;margin:0 auto}
+.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0}
+.info-card{background:var(--surface);backdrop-filter:blur(24px);border:1px solid var(--border);border-top:1px solid rgba(255,255,255,0.15);border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--shadow)}
+.info-card .ic-num{font-size:1.8em;font-weight:900;color:var(--primary);text-shadow:0 0 15px rgba(56,189,248,0.4)}
+.info-card .ic-lbl{font-size:.75em;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.section-title{font-size:.8em;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:24px 0 10px}
+.cat-grid{display:flex;flex-wrap:wrap;gap:8px}
+.cat-chip{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:12px;padding:8px 18px;cursor:pointer;font-size:.85em;font-weight:600;color:var(--text2);transition:all .3s;font-family:inherit;box-shadow:var(--shadow)}
+.cat-chip:hover{border-color:var(--primary);color:var(--primary)}
+.cat-chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 32px;border:none;border-radius:10px;font-family:inherit;font-size:.95em;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.25)}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.3)}
+.btn-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-lg{padding:14px 40px;font-size:1em}
+.start-area{text-align:center;margin-top:28px}
+/* Quiz */
+#quizScreen{display:none;animation:fadeIn .4s ease}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.quiz-top .qt-label{font-size:.85em;color:var(--text3);font-weight:600}
+.quiz-top .qt-label span{color:var(--primary);font-family:'JetBrains Mono',monospace}
+.quiz-top .qt-cat{background:var(--surface2);color:var(--text2);padding:3px 12px;border-radius:6px;font-size:.75em;font-weight:600;border:1px solid var(--border)}
+.progress-track{background:var(--surface2);border-radius:6px;height:6px;margin-bottom:24px;overflow:hidden;border:1px solid var(--border)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:6px;transition:width .4s ease;box-shadow:0 0 12px rgba(56,189,248,0.6)}
+.q-card{background:var(--surface);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--border);border-top:1px solid rgba(255,255,255,0.2);border-radius:24px;padding:28px;margin-bottom:18px;box-shadow:var(--shadow-lg),inset 0 0 20px rgba(255,255,255,0.02);position:relative}
+.q-card .q-badge{display:inline-block;background:var(--primary-light);color:var(--primary);padding:3px 10px;border-radius:6px;font-size:.7em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.q-card .q-text{font-size:1.15em;font-weight:700;line-height:1.6;color:var(--text)}
+.q-card .q-hint{font-size:.8em;color:var(--text3);margin-top:8px;font-style:italic}
+.options{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.option{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:16px;padding:14px 18px;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}
+.option:hover{border-color:var(--primary);background:var(--primary-light);transform:translateY(-2px)}
+.option.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:0 0 20px rgba(56,189,248,0.2),inset 0 0 10px rgba(56,189,248,0.1)}
+.option .o-key{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8em;background:var(--surface2);color:var(--text);border:1px solid var(--border2);flex-shrink:0;transition:all .2s;font-family:'JetBrains Mono',monospace}
+.option.selected .o-key{background:var(--primary);color:#fff;border-color:var(--primary)}
+.option .o-text{font-size:.92em;font-weight:500;color:var(--text)}
+.quiz-nav{display:flex;justify-content:space-between}
+/* Results */
+#resultsScreen{display:none;animation:fadeIn .5s ease}
+.result-hero{text-align:center;padding:40px 24px;background:var(--surface);backdrop-filter:blur(30px);border:1px solid var(--border);border-top:1px solid rgba(255,255,255,0.25);border-radius:32px;box-shadow:var(--shadow-lg);margin-bottom:20px;position:relative;overflow:hidden}
+.result-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.result-hero.tier-gold::before{background:linear-gradient(90deg,#fbbf24,#f59e0b,#fbbf24)}
+.result-hero.tier-green::before{background:linear-gradient(90deg,#34d399,#059669,#34d399)}
+.result-hero.tier-blue::before{background:linear-gradient(90deg,#60a5fa,#2563eb,#60a5fa)}
+.result-hero.tier-orange::before{background:linear-gradient(90deg,#fb923c,#d97706,#fb923c)}
+.result-hero.tier-red::before{background:linear-gradient(90deg,#f87171,#dc2626,#f87171)}
+.score-circle{width:140px;height:140px;margin:0 auto 16px;position:relative}
+.score-circle svg{transform:rotate(-90deg);width:140px;height:140px}
+.score-circle .bg{fill:none;stroke:var(--surface2);stroke-width:8}
+.score-circle .fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+.score-circle .sc-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.score-circle .sc-pct{font-size:2em;font-weight:900;font-family:'JetBrains Mono',monospace}
+.score-circle .sc-lbl{font-size:.65em;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.result-hero h2{font-size:1.6em;font-weight:800;margin-bottom:4px}
+.result-hero .r-msg{color:var(--text2);font-size:.95em}
+.result-emoji{font-size:3em;margin-bottom:12px;display:block}
+.r-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}
+.r-stat.s-time .rs-num{color:var(--accent)}
+.r-stat{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.r-stat .rs-num{font-size:1.5em;font-weight:800;font-family:'JetBrains Mono',monospace;text-shadow:0 0 10px rgba(255,255,255,0.2)}
+.r-stat .rs-lbl{font-size:.7em;color:var(--text3);text-transform:uppercase;font-weight:600}
+.r-stat.s-correct .rs-num{color:var(--green);text-shadow:0 0 10px rgba(52,211,153,0.3)}
+.r-stat.s-wrong .rs-num{color:var(--red);text-shadow:0 0 10px rgba(248,113,113,0.3)}
+.r-stat.s-total .rs-num{color:var(--primary);text-shadow:0 0 10px rgba(56,189,248,0.3)}
+.review-section{margin-top:20px}
+.review-section h3{font-size:.85em;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);padding:8px 16px;border-radius:12px;display:inline-block;backdrop-filter:blur(16px)}
+.rv-item{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:8px;border-left:4px solid var(--green);box-shadow:var(--shadow)}
+.rv-item.wrong{border-left-color:var(--red)}
+.rv-item .rv-head{display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:6px}
+.rv-item .rv-q{font-weight:600;font-size:.9em;flex:1}
+.rv-item .rv-badge{padding:2px 8px;border-radius:4px;font-size:.7em;font-weight:700;flex-shrink:0}
+.rv-item:not(.wrong) .rv-badge{background:var(--green-light);color:var(--green)}
+.rv-item.wrong .rv-badge{background:var(--red-light);color:var(--red)}
+.rv-item .rv-ans{font-size:.82em;color:var(--text2);margin-top:3px}
+.rv-item .rv-ans span{font-weight:700}
+.rv-correct{color:var(--green)!important}
+.rv-wrong{color:var(--red)!important}
+.retry-area{text-align:center;margin-top:28px;padding-bottom:40px}
+/* Celebration overlay */
+.celebration{position:fixed;inset:0;z-index:100;pointer-events:none;display:none}
+.celebration.active{display:block}
+.celebration .c-particle{position:absolute;font-size:1.6em;animation:cFall linear forwards;pointer-events:none}
+@keyframes cFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(100vh) rotate(720deg) scale(.5)}}
+.celebration .c-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5em;animation:cBurst .8s ease forwards;pointer-events:none;z-index:101}
+@keyframes cBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+/* Sad animation */
+.encourage-anim{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;font-size:4em;animation:encouragePop 1.5s ease forwards;pointer-events:none}
+@keyframes encouragePop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-10deg)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(3deg)}60%{transform:translate(-50%,-50%) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(.8) translateY(-40px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media(max-width:600px){.hero h1{font-size:1.5em}.info-cards{grid-template-columns:1fr 1fr 1fr;gap:8px}.info-card{padding:14px}.container{padding:16px 14px}.q-card{padding:20px}.q-card .q-text{font-size:1em}}
+</style>
+</head>
+<body>
+<div class="gif-bg"></div>
+<div class="gif-overlay"></div>
+<div class="topbar">
+<div class="logo"><div class="icon">ع</div>Arabic Proficiency Test</div>
+<div style="display:flex;align-items:center;gap:10px">
+<div class="timer-display" id="timerDisplay" style="display:none"><span class="timer-icon">⏱</span><span id="timerText">00:00</span></div>
+<button class="btn-exit" id="exitBtn" style="display:none" onclick="exitQuiz()">✕ Exit</button>
+</div>
+</div>
+<div class="celebration" id="celebration"></div>
+<div class="container">
+<div id="welcomeScreen">
+<div class="hero">
+<div class="hero-arabic">بِسْمِ ٱللَّهِ</div>
+<h1>Arabic Language Assessment</h1>
+<p>Comprehensive MCQ examination covering vocabulary, grammar, verbs, and conversational Arabic through Roman Arabic & Roman Hindi bridge methods.</p>
+</div>
+<div class="info-cards">
+<div class="info-card"><div class="ic-num" id="totalQs">50</div><div class="ic-lbl">Questions</div></div>
+<div class="info-card"><div class="ic-num">10</div><div class="ic-lbl">Categories</div></div>
+<div class="info-card"><div class="ic-num">∞</div><div class="ic-lbl">Attempts</div></div>
+</div>
+<div class="section-title">Filter by Category (optional)</div>
+<div class="cat-grid" id="catChips"></div>
+<div class="start-area"><button class="btn btn-primary btn-lg" onclick="startQuiz()">Begin Assessment →</button></div>
+</div>
+<div id="quizScreen">
+<div class="quiz-top">
+<span class="qt-label">Question <span id="qCur">1</span> / <span id="qTot">50</span></span>
+<span class="qt-cat" id="qCat"></span>
+</div>
+<div class="progress-track"><div class="progress-fill" id="pFill"></div></div>
+<div class="q-card">
+<span class="q-badge" id="qBadge"></span>
+<div class="q-text" id="qText"></div>
+<div class="q-hint" id="qHint"></div>
+</div>
+<div class="options" id="opts"></div>
+<div class="quiz-nav">
+<button class="btn btn-outline" id="prevBtn" onclick="prev()">← Previous</button>
+<div style="display:flex;gap:8px"><button class="btn btn-primary" id="nextBtn" onclick="next()">Next →</button></div>
+</div>
+</div>
+<div id="resultsScreen">
+<div class="result-hero" id="resultHero">
+<span class="result-emoji" id="rEmoji"></span>
+<div class="score-circle">
+<svg viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="60"/><circle class="fg" id="ringFg" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="377"/></svg>
+<div class="sc-text"><div class="sc-pct" id="sPct">0%</div><div class="sc-lbl">Score</div></div>
+</div>
+<h2 id="rTitle"></h2>
+<p class="r-msg" id="rMsg"></p>
+</div>
+<div class="r-stats">
+<div class="r-stat s-correct"><div class="rs-num" id="rC">0</div><div class="rs-lbl">Correct</div></div>
+<div class="r-stat s-wrong"><div class="rs-num" id="rW">0</div><div class="rs-lbl">Incorrect</div></div>
+<div class="r-stat s-total"><div class="rs-num" id="rT">0</div><div class="rs-lbl">Total</div></div>
+<div class="r-stat s-time"><div class="rs-num" id="rTime">0:00</div><div class="rs-lbl">Time</div></div>
+</div>
+<div class="review-section"><h3>Detailed Answer Review</h3><div id="rvList"></div></div>
+<div class="retry-area"><button class="btn btn-primary btn-lg" onclick="location.reload()">Retake Assessment ↻</button></div>
+</div>
+</div>
+<script>
+const Q=[
+{c:"Greetings",q:"What does 'As-salamu alaykum' mean?",h:"Complete Arabic Encyclopedia – Module 1",o:["Hello friend","Peace be upon you","Good morning","How are you"],a:1},
+{c:"Greetings",q:"Roman Arabic for 'How are you?' (to a male)?",h:"Ultimate Spoken Arabic Course – §1",o:["Ma ismuka?","Kayfa haluka?","Min ayna anta?","Hal anta?"],a:1},
+{c:"Greetings",q:"'Tasharrafna' means in Roman Hindi:",h:"Complete Arabic Encyclopedia – Module 1",o:["Shukriya","Khuda Hafiz","Aapse milkar khushi hui","Aap kaise hain?"],a:2},
+{c:"Greetings",q:"Arabic greeting for 'Good morning'?",h:"Complete Arabic Encyclopedia – Module 1",o:["Masa' al-khayr","Sabah al-khayr","Ahlan wa sahlan","Ma'a as-salamah"],a:1},
+{c:"Greetings",q:"'Shukran' translates to:",h:"Complete Arabic Encyclopedia – Module 1",o:["Welcome","Sorry","Thank you","Please"],a:2},
+{c:"Pronouns",q:"Roman Arabic pronoun for 'I'?",h:"Complete Arabic Encyclopedia – Module 2",o:["Anta","Nahnu","Huwa","Ana"],a:3},
+{c:"Pronouns",q:"'Nahnu' is the Arabic pronoun for:",h:"Complete Arabic Encyclopedia – Module 2",o:["He","They","We","You (plural)"],a:2},
+{c:"Pronouns",q:"Which pronoun means 'She'?",h:"Complete Arabic Encyclopedia – Module 2",o:["Huwa","Hiya","Anti","Nahnu"],a:1},
+{c:"Pronouns",q:"'Antuma' in Classical Arabic refers to:",h:"Complete Arabic Encyclopedia – Advanced",o:["You all (plural)","You two (dual)","They two","We both"],a:1},
+{c:"Pronouns",q:"'Antum' means:",h:"Complete Arabic Encyclopedia – Module 2",o:["You (female singular)","He","You all (masc. plural)","They"],a:2},
+{c:"Gender",q:"How do you make a masculine word feminine?",h:"Complete Arabic Encyclopedia – Module 2",o:["Add prefix 'Al-'","Add suffix Taa Marbootah (ah)","Change the first letter","Add '-een' ending"],a:1},
+{c:"Gender",q:"Feminine form of 'Mu'allim' (teacher)?",h:"Arabic Grammar Masterclass – Module 1",o:["Mu'allimoon","Mu'allimah","Mu'allimeen","Mu'allimaat"],a:1},
+{c:"Gender",q:"'Sayyaarah' (car) is which gender?",h:"Arabic Grammar Masterclass – Module 1",o:["Masculine","Neutral","Feminine","Dual"],a:2},
+{c:"Gender",q:"Feminine form of 'Saeed' (Happy)?",h:"Complete Arabic Encyclopedia – Module 2",o:["Saeedoon","Saeedah","Saeedeen","Saeediyyah"],a:1},
+{c:"Gender",q:"Taa Marbootah (ة) produces which sound?",h:"Arabic Grammar Masterclass – Grammar Tip",o:["'un' sound","'ee' sound","'ah' sound","'oo' sound"],a:2},
+{c:"Demonstratives",q:"'Hadha' is used for:",h:"Complete Arabic Encyclopedia – Module 2",o:["This (feminine)","These (plural)","This (masculine)","That (far)"],a:2},
+{c:"Demonstratives",q:"'This is a book' in Roman Arabic?",h:"Arabic Grammar Masterclass – Module 3",o:["Hadhihi Kitab","Ha'ulaa'i Kitab","Hadha Kitab","Tilka Kitab"],a:2},
+{c:"Demonstratives",q:"'Ha'ulaa'i' is used for:",h:"Complete Arabic Encyclopedia – Golden Paradox",o:["This (masculine)","This (feminine)","These (human plural only)","Those (far)"],a:2},
+{c:"Demonstratives",q:"'These are books' per the Golden Paradox:",h:"Complete Arabic Encyclopedia – Module 2",o:["Ha'ulaa'i Kutub","Hadha Kutub","Hadhihi Kutub","Hunaka Kutub"],a:2},
+{c:"Demonstratives",q:"Demonstrative for singular feminine noun?",h:"Arabic Grammar Masterclass – Module 3",o:["Hadha","Hadhihi","Ha'ulaa'i","Dhalika"],a:1},
+{c:"Verbs",q:"Arabic verbs are built on roots of how many letters?",h:"Complete Arabic Encyclopedia – Module 3",o:["2 letters","3 letters","4 letters","5 letters"],a:1},
+{c:"Verbs",q:"Present tense prefix 'Ya-' denotes:",h:"Complete Arabic Encyclopedia – Module 3",o:["I","You (male)","He","We"],a:2},
+{c:"Verbs",q:"'Darasa / Yadrusu / Diraasah' means:",h:"Ultimate Arabic Verbs Dictionary",o:["To write","To study","To travel","To eat"],a:1},
+{c:"Verbs",q:"Past tense of 'go' (Dhahaba) for 'I went'?",h:"Complete Arabic Encyclopedia – Module 3",o:["Adhhab","Dhahabtu","Yadhhab","Sa-adhhab"],a:1},
+{c:"Verbs",q:"Future tense is formed by:",h:"Complete Arabic Encyclopedia – Module 3",o:["Add suffix '-tu'","Add prefix 'Sa-' to present","Change root letters","Add 'Sawfa' after verb"],a:1},
+{c:"Verbs",q:"'Kataba / Yaktubu / Kitabah' means:",h:"Complete Arabic Encyclopedia – Module 3",o:["Read","Write","Speak","Listen"],a:1},
+{c:"Verbs",q:"'Istama'a / Yastami'u / Istimaa'' means:",h:"Ultimate Arabic Verbs Dictionary",o:["Wake up","Wait","Listen","Receive"],a:2},
+{c:"Verbs",q:"'Ishtara / Yashtaree / Ishtiraa'' means:",h:"Ultimate Arabic Verbs Dictionary",o:["Sell","Buy","Believe","Finish"],a:1},
+{c:"Nationality",q:"Masculine nationality suffix in Arabic:",h:"Complete Arabic Encyclopedia – Module 2",o:["'-iyyah'","Prefix 'Al-'","Suffix '-i'","'-oon'"],a:2},
+{c:"Nationality",q:"Indian female in Arabic is:",h:"Ultimate Spoken Arabic Course – §2",o:["Hindi","Hindiyyah","Al-Hindiyyah","Hindeen"],a:1},
+{c:"Nationality",q:"'Min ayna anta?' means:",h:"Ultimate Spoken Arabic Course – §2",o:["What is your name?","Where are you from?","How old are you?","What do you want?"],a:1},
+{c:"Grammar",q:"Jar (Genitive) case ends in:",h:"Ultimate Arabic Grammar Guide – §3",o:["Damma (-u)","Fatha (-a)","Kasra (-i)","Sukoon"],a:2},
+{c:"Grammar",q:"Raf' (Nominative) case ending is:",h:"Ultimate Arabic Grammar Guide – §3",o:["Kasra (-i)","Fatha (-a)","Damma (-u)","Tanwin (-an)"],a:2},
+{c:"Grammar",q:"In Idafa, the owner (Mudaf Ilayhi) takes:",h:"Ultimate Arabic Grammar Guide – §3",o:["Raf' case","Nasb case","Jar case","No case"],a:2},
+{c:"Grammar",q:"'Al-' makes a noun:",h:"Ultimate Arabic Grammar Guide – §2",o:["Indefinite","Plural","Definite","Feminine"],a:2},
+{c:"Grammar",q:"Which preposition means 'In'?",h:"Ultimate Arabic Grammar Guide – §3",o:["Min","Fi","'Ala","Ila"],a:1},
+{c:"Grammar",q:"Tanwin (-un, -an, -in) makes a noun:",h:"Ultimate Arabic Grammar Guide – §2",o:["Definite","Plural","Dual","Indefinite"],a:3},
+{c:"Grammar",q:"Adjectives come ______ the noun in Arabic.",h:"Ultimate Arabic Grammar Guide – §4",o:["Before","After","Either position","Sentence end only"],a:1},
+{c:"Vocabulary",q:"'Ureed' means:",h:"Arabic Masterclass Guide – Lesson 1",o:["I understand","I want","I go","I speak"],a:1},
+{c:"Vocabulary",q:"'Afham' means:",h:"Arabic Masterclass Guide – Lesson 2",o:["I speak","I want","I understand","I write"],a:2},
+{c:"Vocabulary",q:"Arabic word for 'Doctor':",h:"Ultimate Spoken Arabic Course – §3",o:["Muhandis","Mudaris","Tabeeb","Mudeer"],a:2},
+{c:"Vocabulary",q:"'Kitab' means:",h:"Arabic Grammar Masterclass – Module 3",o:["Pen","Book","Table","Door"],a:1},
+{c:"Vocabulary",q:"'Qaleelan' means:",h:"Arabic Masterclass Guide – Lesson 2",o:["Very well","A little bit","Too much","Nothing"],a:1},
+{c:"Family",q:"'Umm' means:",h:"Ultimate Spoken Arabic Course – §3",o:["Father","Brother","Mother","Sister"],a:2},
+{c:"Family",q:"Arabic word for 'Son':",h:"Ultimate Spoken Arabic Course – §3",o:["Bint","Akh","Zawj","Ibn"],a:3},
+{c:"Family",q:"'Zawjati' means:",h:"Ultimate Spoken Arabic Course – §3",o:["My husband","My wife","My sister","My daughter"],a:1},
+{c:"Plurals",q:"Regular masculine plural suffix:",h:"Arabic Grammar Masterclass – Module 2",o:["-aat","-een / -oon","-ah","-ayn"],a:1},
+{c:"Plurals",q:"Broken plural of 'Kitab' (book):",h:"Arabic Grammar Masterclass – Module 2",o:["Kitabaat","Kitaboon","Kutub","Kitabeen"],a:2},
+{c:"Plurals",q:"Non-human plurals are treated as:",h:"Complete Arabic Encyclopedia – Golden Paradox",o:["Masculine plural","Dual","Singular feminine","Masculine singular"],a:2},
+{c:"Conversation",q:"To say 'I have' conversationally:",h:"Ultimate Spoken Arabic Course – §4",o:["Li","Ana","'Indi","Huwa"],a:2}
+];
+let qs=[],cur=0,ans={},selCats=new Set(),timerStart=0,timerInterval=null,elapsedTime=0;
+const cats=[...new Set(Q.map(x=>x.c))];
+const $=id=>document.getElementById(id);
+function fmtTime(s){const m=Math.floor(s/60);const sec=s%60;return m+':'+(sec<10?'0':'')+sec}
+function startTimer(){timerStart=Date.now();$('timerDisplay').style.display='flex';$('exitBtn').style.display='block';timerInterval=setInterval(()=>{elapsedTime=Math.floor((Date.now()-timerStart)/1000);$('timerText').textContent=fmtTime(elapsedTime)},1000)}
+function stopTimer(){clearInterval(timerInterval)}
+function exitQuiz(){const ov=document.createElement('div');ov.className='confirm-overlay';ov.innerHTML='<div class="confirm-box"><h3>Exit Assessment?</h3><p>Your progress will be lost. Are you sure you want to exit?</p><div class="cb-btns"><button class="btn btn-outline" onclick="this.closest(\'.confirm-overlay\').remove()">Cancel</button><button class="btn btn-primary" style="background:var(--red)" onclick="confirmExit()">Yes, Exit</button></div></div>';document.body.appendChild(ov)}
+function confirmExit(){document.querySelector('.confirm-overlay').remove();stopTimer();$('timerDisplay').style.display='none';$('exitBtn').style.display='none';$('quizScreen').style.display='none';$('welcomeScreen').style.display='block'}
+function init(){const ch=$('catChips');cats.forEach(c=>{const b=document.createElement('button');b.className='cat-chip';b.textContent=c;b.onclick=()=>{b.classList.toggle('active');selCats.has(c)?selCats.delete(c):selCats.add(c);$('totalQs').textContent=(selCats.size?Q.filter(x=>selCats.has(x.c)):Q).length};ch.appendChild(b)})}
+function startQuiz(){qs=selCats.size?Q.filter(x=>selCats.has(x.c)):[...Q];qs.sort(()=>Math.random()-.5);cur=0;ans={};$('welcomeScreen').style.display='none';$('quizScreen').style.display='block';$('qTot').textContent=qs.length;startTimer();render()}
+function render(){const q=qs[cur];$('pFill').style.width=((cur+1)/qs.length*100)+'%';$('qCur').textContent=cur+1;$('qBadge').textContent='Question '+(cur+1)+' of '+qs.length;$('qText').textContent=q.q;$('qHint').textContent='Source: '+q.h;$('qCat').textContent=q.c;const c=$('opts');c.innerHTML='';'ABCD'.split('').forEach((l,i)=>{const d=document.createElement('div');d.className='option'+(ans[cur]===i?' selected':'');d.innerHTML='<span class="o-key">'+l+'</span><span class="o-text">'+q.o[i]+'</span>';d.onclick=()=>{ans[cur]=i;render()};c.appendChild(d)});$('prevBtn').style.visibility=cur===0?'hidden':'visible';$('nextBtn').textContent=cur===qs.length-1?'Submit Assessment ✓':'Next →'}
+function prev(){if(cur>0){cur--;render()}}
+function next(){if(ans[cur]===undefined){$('nextBtn').style.animation='shake .4s ease';setTimeout(()=>$('nextBtn').style.animation='',400);return}if(cur<qs.length-1){cur++;render()}else{results()}}
+function results(){stopTimer();$('timerDisplay').style.display='none';$('exitBtn').style.display='none';$('quizScreen').style.display='none';$('resultsScreen').style.display='block';let correct=0;qs.forEach((q,i)=>{if(ans[i]===q.a)correct++});const pct=Math.round(correct/qs.length*100);
+let tier,emoji,title,msg,ringColor;
+if(pct>=90){tier='gold';emoji='🏆';title='Outstanding Performance!';msg='You have demonstrated exceptional mastery of Arabic fundamentals.';ringColor='#f59e0b';celebrate('gold')}
+else if(pct>=80){tier='green';emoji='🌟';title='Excellent Work!';msg='Strong command of Arabic. Keep refining the details!';ringColor='#059669';celebrate('green')}
+else if(pct>=65){tier='blue';emoji='👏';title='Good Progress!';msg='Solid foundation — review weaker areas to level up.';ringColor='#2563eb';showEncourage('💪')}
+else if(pct>=50){tier='orange';emoji='📖';title='Keep Practicing!';msg='You\'re on the right track. Focus on grammar and verb conjugation.';ringColor='#d97706';showEncourage('📚')}
+else{tier='red';emoji='🔄';title='More Study Needed';msg='Review the source materials and retake the assessment.';ringColor='#dc2626';showEncourage('🤔')}
+const hero=$('resultHero');hero.className='result-hero tier-'+tier;
+$('rEmoji').textContent=emoji;$('rTitle').textContent=title;$('rMsg').textContent=msg;
+$('sPct').textContent=pct+'%';$('sPct').style.color=ringColor;
+$('rC').textContent=correct;$('rW').textContent=qs.length-correct;$('rT').textContent=qs.length;$('rTime').textContent=fmtTime(elapsedTime);
+const off=377-377*(pct/100);const fg=$('ringFg');fg.style.stroke=ringColor;setTimeout(()=>fg.style.strokeDashoffset=off,100);
+const rv=$('rvList');rv.innerHTML='';qs.forEach((q,i)=>{const ok=ans[i]===q.a;const d=document.createElement('div');d.className='rv-item'+(ok?'':' wrong');d.innerHTML='<div class="rv-head"><span class="rv-q">'+(i+1)+'. '+q.q+'</span><span class="rv-badge">'+(ok?'✓ Correct':'✗ Incorrect')+'</span></div>'+(ok?'<div class="rv-ans rv-correct">Your answer: <span>'+q.o[ans[i]]+'</span></div>':'<div class="rv-ans rv-wrong">Your answer: <span>'+q.o[ans[i]]+'</span></div><div class="rv-ans rv-correct">Correct: <span>'+q.o[q.a]+'</span></div>');rv.appendChild(d)})}
+function celebrate(tier){const cel=$('celebration');cel.classList.add('active');const icons=tier==='gold'?['🏆','⭐','🌟','✨','👑','🎖️','💛','🥇']:['🌟','🎉','✨','💚','🎊','⭐','💫','🌿'];
+// Burst emoji
+const burst=document.createElement('div');burst.className='c-burst';burst.textContent=tier==='gold'?'🏆':'🌟';cel.appendChild(burst);setTimeout(()=>burst.remove(),1000);
+// Particles
+for(let i=0;i<40;i++){const p=document.createElement('div');p.className='c-particle';p.textContent=icons[Math.floor(Math.random()*icons.length)];p.style.left=Math.random()*100+'vw';p.style.top=-20+'px';p.style.animationDuration=(2+Math.random()*3)+'s';p.style.animationDelay=(Math.random()*1.5)+'s';cel.appendChild(p);setTimeout(()=>p.remove(),6000)}
+setTimeout(()=>cel.classList.remove('active'),6500)}
+function showEncourage(emoji){const e=document.createElement('div');e.className='encourage-anim';e.textContent=emoji;document.body.appendChild(e);setTimeout(()=>e.remove(),2000)}
+init();
+</script>
+</body>
+</html>
